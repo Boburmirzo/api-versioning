@@ -8,15 +8,23 @@ services:
       - ./config/apisix/apisix.yml:/usr/local/apisix/conf/apisix.yaml:ro
     ports:
       - "9080:9080"
+  
   version1:
-    image: busybox:1.36
-    command: ["/bin/busybox", "httpd", "-f", "-p", "8080"]
+    image: nginx:1.19.0-alpine
+    restart: always
     volumes:
-      - ./config/httpd/httpd.conf:/etc/httpd.conf
-      - ./config/content/version1:/www
+      - ./upstream/web1.conf:/etc/nginx/nginx.conf
+    ports:
+      - "9081:80/tcp"
+    environment:
+      - NGINX_PORT=80
+
   version2:
-    image: busybox:1.36
-    command: ["/bin/busybox", "httpd", "-f", "-p", "8080"]
+    image: nginx:1.19.0-alpine
+    restart: always
     volumes:
-      - ./config/httpd/httpd.conf:/etc/httpd.conf
-      - ./config/content/version2:/www
+      - ./upstream/web2.conf:/etc/nginx/nginx.conf
+    ports:
+      - "9082:80/tcp"
+    environment:
+      - NGINX_PORT=80

@@ -1,12 +1,13 @@
 upstreams:
   - id: 1
     nodes:
-      "version1:8080": 1
+      "version1:80": 1
   - id: 2
     nodes:
-      "version2:8080": 1
+      "version2:80": 1
 
 routes:
+  # URI Path-based versioning config
   - uri: /v1*
     upstream_id: 1
     plugins:
@@ -17,6 +18,7 @@ routes:
     plugins:
       proxy-rewrite:
         regex_uri: [ "/v2(?:/?)(.*)", "/$1" ]
+  # Query-based versioning config
   - uri: /*
     upstream_id: 1
     vars: [[ "arg_version", "==", "v1" ]]
@@ -25,6 +27,7 @@ routes:
     upstream_id: 2
     vars: [[ "arg_version", "==", "v2" ]]
     priority: 4
+  # Header-based versioning config
   - uri: /*
     upstream_id: 1
     vars: [[ "http_accept", "==", "vnd.ch.frankel.myservice.v1+json" ]]
